@@ -100,3 +100,13 @@ TECHNOLOGY STACK:
 - Zod: Runtime request validation, query coercion, and TypeScript type inference.
 - Bcrypt: For password hashing and protection.
 - JWT:  User Authentication and Autherization.
+
+
+DATABASE:
+
+- npm init -y
+- npm install express
+- npm install @prisma/client @prisma/adapter-pg pg dotenv
+- npm install -D prisma@7.10.0 typescript tsx @types/node @types/pg @types/express
+- npx prisma init --datasource-provider postgresql
+- npx tsc --init
