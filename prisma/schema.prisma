@@ -12,3 +12,139 @@ datasource db {
   provider = "postgresql"
 }
 
+enum Role {
+  USER
+  ADMIN
+}
+
+enum ApplicationStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  WITHDRAWN
+}
+
+enum ContractStatus {
+  OFFERED
+  DECLINED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum JobStatus {
+  OPEN
+  CLOSED
+}
+
+model User {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  bio          String?
+  role         Role     @default(USER)
+  passwordHash String
+  tokenVersion Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  skills       Skill[]
+  jobs         Job[]
+  applications Application[]
+
+  clientContracts     Contract[] @relation("ClientContracts")
+  freelancerContracts Contract[] @relation("FreelancerContracts")
+  reviewsGiven        Review[]   @relation("ReviewsGiven")
+  reviewsReceived     Review[]   @relation("ReviewsReceived")
+}
+
+model Skill {
+  id        String   @id @default(uuid())
+  name      String
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Category {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  jobs Job[]
+}
+
+model Job {
+  id          String    @id @default(uuid())
+  title       String
+  description String
+  status      JobStatus @default(OPEN)
+  budget      Float
+  clientId    String
+  categoryId  String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  applications Application[]
+
+  client    User       @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  category  Category   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  contracts Contract[]
+}
+
+model Application {
+  id           String            @id @default(uuid())
+  proposal     String
+  status       ApplicationStatus @default(PENDING)
+  jobId        String
+  proposedRate Float
+  freelancerId String
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+
+  freelancer User @relation(fields: [freelancerId], references: [id], onDelete: Cascade)
+  job        Job  @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  contract Contract?
+
+  @@unique([jobId, freelancerId])
+}
+
+model Contract {
+  id            String         @id @default(uuid())
+  status        ContractStatus @default(OFFERED)
+  jobId         String
+  applicationId String         @unique
+  clientId      String
+  freelancerId  String
+  agreedRate    Float
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  job         Job         @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  client     User     @relation("ClientContracts", fields: [clientId], references: [id], onDelete: Cascade)
+  freelancer User     @relation("FreelancerContracts", fields: [freelancerId], references: [id], onDelete: Cascade)
+  reviews    Review[]
+}
+
+model Review {
+  id         String   @id @default(uuid())
+  rating     Int
+  comment    String?
+  contractId String
+  reviewerId String
+  revieweeId String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  contract Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  reviewer User     @relation("ReviewsGiven", fields: [reviewerId], references: [id], onDelete: Cascade)
+  reviewee User     @relation("ReviewsReceived", fields: [revieweeId], references: [id], onDelete: Cascade)
+
+  @@unique([contractId, reviewerId])
+}
