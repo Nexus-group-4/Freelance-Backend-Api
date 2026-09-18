@@ -164,22 +164,13 @@ This project uses PostgreSQL as the database, accessed through Prisma ORM.
 - Initialize the project:
 
 ```bash
-npm init -y
+npm install
 ```
 
-- Install Dependencies
+- Create a .env file and add the PostgreSQL database connection:
   
 ```bash
-npm install express
-npm install @prisma/client @prisma/adapter-pg pg dotenv
-npm install -D prisma@7.10.0 typescript tsx @types/node @types/pg @types/express
-```
-
-- Initialize Prisma and typescript
-
-```bash
-npx prisma init --datasource-provider postgresql
-npx tsc --init
+DATABASE_URL=
 ```
 
 - Apply migrations and generate prisma client
