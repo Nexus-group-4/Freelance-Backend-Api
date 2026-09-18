@@ -161,11 +161,30 @@ This project uses PostgreSQL as the database, accessed through Prisma ORM.
 
 ### Database Setup
 
+- Initialize the project:
+
 ```bash
 npm init -y
+```
+
+- Install Dependencies
+  
+```bash
 npm install express
 npm install @prisma/client @prisma/adapter-pg pg dotenv
 npm install -D prisma@7.10.0 typescript tsx @types/node @types/pg @types/express
+```
+
+- Initialize Prisma and typescript
+
+```bash
 npx prisma init --datasource-provider postgresql
 npx tsc --init
+```
+
+- Run migrations and generate prisma client
+
+```bash
+npx prisma migrate dev --name init
+npx prisma generate
 ```
