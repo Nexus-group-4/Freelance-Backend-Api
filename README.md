@@ -182,9 +182,9 @@ npx prisma init --datasource-provider postgresql
 npx tsc --init
 ```
 
-- Run migrations and generate prisma client
+- Apply migrations and generate prisma client
 
 ```bash
-npx prisma migrate dev --name init
+npx prisma migrate deploy
 npx prisma generate
 ```
