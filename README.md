@@ -170,7 +170,7 @@ npm install
 - Create a .env file and add the PostgreSQL database connection:
   
 ```bash
-DATABASE_URL=
+DATABASE_URL="postgresql://username:password@localhost:5432/mydb?schema=public"
 ```
 
 - Apply migrations and generate prisma client
