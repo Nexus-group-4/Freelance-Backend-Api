@@ -121,7 +121,7 @@ model Job {
   status      JobStatus @default(OPEN)
   budget      Float
   clientId    String    @map("client_id")
-  categoryId  String    @map("catagory_id")
+  categoryId  String    @map("category_id")
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime  @updatedAt @map("updated_at")
 
@@ -156,7 +156,7 @@ model Application {
 model Contract {
   id            String         @id @default(uuid())
   status        ContractStatus @default(OFFERED)
-  jobId         String
+  jobId         String         @map("job_id")
   applicationId String         @unique @map("application_id")
   clientId      String         @map("client_id")
   freelancerId  String         @map("freelancer_id")
