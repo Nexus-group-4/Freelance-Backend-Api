@@ -12,7 +12,7 @@ datasource db {
   provider = "postgresql"
 }
 
-enum Role {
+enum RoleName {
   USER
   ADMIN
 }
@@ -42,30 +42,65 @@ model User {
   name         String
   email        String   @unique
   bio          String?
-  role         Role     @default(USER)
+  roleId       String   @map("role_id")
   passwordHash String
-  tokenVersion Int      @default(0)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  tokenVersion Int      @default(0) @map("token_version")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  role Role @relation(fields: [roleId], references: [id])
 
   skills       Skill[]
   jobs         Job[]
   applications Application[]
 
-  clientContracts     Contract[] @relation("ClientContracts")
-  freelancerContracts Contract[] @relation("FreelancerContracts")
-  reviewsGiven        Review[]   @relation("ReviewsGiven")
-  reviewsReceived     Review[]   @relation("ReviewsReceived")
+  clientContracts     Contract[]    @relation("ClientContracts")
+  freelancerContracts Contract[]    @relation("FreelancerContracts")
+  reviewsGiven        Review[]      @relation("ReviewsGiven")
+  reviewsReceived     Review[]      @relation("ReviewsReceived")
+  authSessions        AuthSession[]
+
+  @@map("users")
+}
+
+model Role {
+  id          String           @id @default(uuid())
+  name        RoleName         @unique
+  permissions RolePermission[]
+  users       User[]
+
+  @@map("roles")
+}
+
+model Permission {
+  id     String           @id @default(uuid())
+  action String           @unique
+  role   RolePermission[]
+
+  @@map("permissions")
+}
+
+model RolePermission {
+  roleId       String @map("role_id")
+  permissionId String @map("permission_id")
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+  @@map("role_permissions")
 }
 
 model Skill {
   id        String   @id @default(uuid())
   name      String
-  userId    String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  userId    String   @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("skills")
 }
 
 model Category {
@@ -75,6 +110,8 @@ model Category {
   updatedAt DateTime @updatedAt
 
   jobs Job[]
+
+  @@map("categorys")
 }
 
 model Job {
@@ -83,27 +120,29 @@ model Job {
   description String
   status      JobStatus @default(OPEN)
   budget      Float
-  clientId    String
-  categoryId  String
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  clientId    String    @map("client_id")
+  categoryId  String    @map("catagory_id")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
 
   applications Application[]
 
   client    User       @relation(fields: [clientId], references: [id], onDelete: Cascade)
   category  Category   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   contracts Contract[]
+
+  @@map("jobs")
 }
 
 model Application {
   id           String            @id @default(uuid())
   proposal     String
   status       ApplicationStatus @default(PENDING)
-  jobId        String
-  proposedRate Float
-  freelancerId String
-  createdAt    DateTime          @default(now())
-  updatedAt    DateTime          @updatedAt
+  jobId        String            @map("job_id")
+  proposedRate Float             @map("proposed_rate")
+  freelancerId String            @map("freelancer_id")
+  createdAt    DateTime          @default(now()) @map("created_at")
+  updatedAt    DateTime          @updatedAt @map("updated_at")
 
   freelancer User @relation(fields: [freelancerId], references: [id], onDelete: Cascade)
   job        Job  @relation(fields: [jobId], references: [id], onDelete: Cascade)
@@ -111,18 +150,19 @@ model Application {
   contract Contract?
 
   @@unique([jobId, freelancerId])
+  @@map("applications")
 }
 
 model Contract {
   id            String         @id @default(uuid())
   status        ContractStatus @default(OFFERED)
   jobId         String
-  applicationId String         @unique
-  clientId      String
-  freelancerId  String
-  agreedRate    Float
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  applicationId String         @unique @map("application_id")
+  clientId      String         @map("client_id")
+  freelancerId  String         @map("freelancer_id")
+  agreedRate    Float          @map("agreed_rate")
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @updatedAt @map("updated_at")
 
   job         Job         @relation(fields: [jobId], references: [id], onDelete: Cascade)
   application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
@@ -130,21 +170,39 @@ model Contract {
   client     User     @relation("ClientContracts", fields: [clientId], references: [id], onDelete: Cascade)
   freelancer User     @relation("FreelancerContracts", fields: [freelancerId], references: [id], onDelete: Cascade)
   reviews    Review[]
+
+  @@map("contracts")
 }
 
 model Review {
   id         String   @id @default(uuid())
   rating     Int
   comment    String?
-  contractId String
-  reviewerId String
-  revieweeId String
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  contractId String   @map("contract_id")
+  reviewerId String   @map("reviewer_id")
+  revieweeId String   @map("reviewee_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
 
   contract Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
   reviewer User     @relation("ReviewsGiven", fields: [reviewerId], references: [id], onDelete: Cascade)
   reviewee User     @relation("ReviewsReceived", fields: [revieweeId], references: [id], onDelete: Cascade)
 
   @@unique([contractId, reviewerId])
+  @@map("review")
+}
+
+model AuthSession {
+  id                   String    @id @default(uuid())
+  userId               String    @map("user_id")
+  currentRefreshDigest String    @map("current_refresh_digest")
+  expiresAt            DateTime  @map("expires_at")
+  revokedAt            DateTime? @map("revoked_at")
+  createdAt            DateTime  @default(now()) @map("created_at")
+  updatedAt            DateTime  @updatedAt @map("updated_at")
+  user                 User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("auth_sessions")
 }
