@@ -5,7 +5,7 @@
 
 generator client {
   provider = "prisma-client"
-  output   = "../generated/prisma"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -54,11 +54,9 @@ model User {
   jobs         Job[]
   applications Application[]
 
-  clientContracts     Contract[]    @relation("ClientContracts")
-  freelancerContracts Contract[]    @relation("FreelancerContracts")
-  reviewsGiven        Review[]      @relation("ReviewsGiven")
-  reviewsReceived     Review[]      @relation("ReviewsReceived")
-  authSessions        AuthSession[]
+  reviewsGiven    Review[]      @relation("ReviewsGiven")
+  reviewsReceived Review[]      @relation("ReviewsReceived")
+  authSessions    AuthSession[]
 
   @@map("users")
 }
@@ -121,15 +119,14 @@ model Job {
   status      JobStatus @default(OPEN)
   budget      Float
   clientId    String    @map("client_id")
-  categoryId  String    @map("catagory_id")
+  categoryId  String    @map("category_id")
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime  @updatedAt @map("updated_at")
 
   applications Application[]
 
-  client    User       @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  category  Category   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  contracts Contract[]
+  client   User     @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
   @@map("jobs")
 }
@@ -156,20 +153,13 @@ model Application {
 model Contract {
   id            String         @id @default(uuid())
   status        ContractStatus @default(OFFERED)
-  jobId         String
   applicationId String         @unique @map("application_id")
-  clientId      String         @map("client_id")
-  freelancerId  String         @map("freelancer_id")
   agreedRate    Float          @map("agreed_rate")
   createdAt     DateTime       @default(now()) @map("created_at")
   updatedAt     DateTime       @updatedAt @map("updated_at")
 
-  job         Job         @relation(fields: [jobId], references: [id], onDelete: Cascade)
   application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
-
-  client     User     @relation("ClientContracts", fields: [clientId], references: [id], onDelete: Cascade)
-  freelancer User     @relation("FreelancerContracts", fields: [freelancerId], references: [id], onDelete: Cascade)
-  reviews    Review[]
+  reviews     Review[]
 
   @@map("contracts")
 }
