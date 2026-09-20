@@ -111,7 +111,7 @@ model Category {
 
   jobs Job[]
 
-  @@map("categorys")
+  @@map("categories")
 }
 
 model Job {
