@@ -104,8 +104,8 @@ model Skill {
 model Category {
   id        String   @id @default(uuid())
   name      String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   jobs Job[]
 
@@ -179,7 +179,7 @@ model Review {
   reviewee User     @relation("ReviewsReceived", fields: [revieweeId], references: [id], onDelete: Cascade)
 
   @@unique([contractId, reviewerId])
-  @@map("review")
+  @@map("reviews")
 }
 
 model AuthSession {
