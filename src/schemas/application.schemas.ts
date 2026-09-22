@@ -7,8 +7,6 @@ export const createApplicationSchema = z.object({
         .string("Proposal is required.")
         .trim()
         .max(5000, "Proposal cannot exceed 5000 characters"),
-    jobId: z.uuid(),
-    freelancerId: z.uuid(),
     proposedRate: z.number()
 })
 
