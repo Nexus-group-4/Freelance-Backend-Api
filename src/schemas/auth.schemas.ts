@@ -34,6 +34,18 @@ export const loginSchema = z.object({
     })
 });
 
+//env schema
+export const envSchema = z.object({
+  NODE_ENV: z
+    .enum(["development", "test", "production"])
+    .default("development"),
+  PORT: z.coerce.number().int().positive().default(5000),
+  DATABASE_URL: z.string().min(1),
+  FRONTEND_ORIGIN: z.string().url(),
+  JWT_ACCESS_SECRET: z.string().min(32),
+});
+
+
 
 //create types based on zod schemas
 export type RegisterBody = z.infer<typeof registerSchema>["body"];
