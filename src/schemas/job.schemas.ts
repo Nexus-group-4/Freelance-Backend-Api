@@ -27,11 +27,6 @@ export const createJobSchema = z.object({
 export const updateJobSchema = z.object({
     body: createJobSchema.partial()
 })
-export const updateJobStatusSchema = z.object({
-    status: JobStatus
-})
-
 
 export type CreateJobInput = z.infer<typeof createJobSchema>
 export type UpdateJobInput = z.infer<typeof updateJobSchema>
-export type UpdateJobStatusInput = z.infer<typeof updateJobStatusSchema>
