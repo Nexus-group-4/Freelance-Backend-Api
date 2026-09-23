@@ -31,7 +31,7 @@ export const createApplication = async (userId: string, jobId: string, data: Cre
         }
     })
 }
-export const editApplication = async (userId: string, id: string, data: UpdateApplicationInput) => {
+export const editApplication = async (id: string, data: UpdateApplicationInput) => {
     const application = await prisma.application.findUnique({ where: { id } })
     if (application!.status != "PENDING") {
         throw { status: 400, message: "Accepted, rejected or withdrawn applications cannot be editted." }
@@ -63,6 +63,6 @@ export const editApplicationStatus = async (userId: string, id: string, data: Up
     return await prisma.application.update({ where: { id }, data: data })
 }
 
-export const deleteApplication = async (userId: string, id: string) => {
+export const deleteApplication = async (id: string) => {
     return await prisma.application.delete({ where: { id } })
 }
