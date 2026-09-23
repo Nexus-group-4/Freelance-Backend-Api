@@ -38,10 +38,6 @@ export const getAllCategories = async (req: Request, res: Response, next: NextFu
 
 export const createJob = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const user = req.user
-        if (!user) {
-            return res.status(401).json({ message: "Authentication required" })
-        }
         const body = req.body
         const validatedBody = createJobSchema.parse(body)
         const job = await jobServices.createJob(req.user!.userId, validatedBody)
@@ -54,13 +50,9 @@ export const createJob = async (req: Request, res: Response, next: NextFunction)
 
 export const editJob = async (req: Request<{ id: string }>, res: Response, next: NextFunction) => {
     try {
-        const user = req.user
-        if (!user) {
-            return res.status(401).json({ message: "Authentication required" })
-        }
         const body = req.body
         const validatedBody = updateJobSchema.parse(body)
-        const job = await jobServices.editJob(req.user!.userId, req.params.id, validatedBody)
+        const job = await jobServices.editJob(req.params.id, validatedBody)
         return res.status(200).json(job)
     } catch (err) {
         next(err)
@@ -70,11 +62,7 @@ export const editJob = async (req: Request<{ id: string }>, res: Response, next:
 
 export const deleteJob = async (req: Request<{ id: string }>, res: Response, next: NextFunction) => {
     try {
-        const user = req.user
-        if (!user) {
-            return res.status(401).json({ message: "Authentication required" })
-        }
-        const job = await jobServices.deleteJob(req.user!.userId, req.params.id)
+        const job = await jobServices.deleteJob(req.params.id)
         return res.status(200).json(job)
     } catch (err) {
         next(err)
