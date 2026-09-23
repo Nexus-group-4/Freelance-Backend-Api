@@ -6,6 +6,7 @@ const authRouter = Router();
 
 authRouter.post('/register', controllers.registering);
 
+authRouter.post('/login', controllers.loging);
 
 
 
