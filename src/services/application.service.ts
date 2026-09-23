@@ -1,17 +1,7 @@
-
-import { ApplicationStatus } from "../generated/prisma/enums"
 import { prisma } from "../lib/prisma.js"
 import { CreateApplicationInput, UpdateApplicationInput, UpdateApplicationStatusInput } from "../schemas/application.schemas"
 
-
-export const getAllApplications = async (userId: string, jobId: string) => {
-    const job = await prisma.job.findUnique({ where: { id: jobId } })
-    if (!job) {
-        throw { status: 404, message: "Job not found." }
-    }
-    if (job.clientId != userId) {
-        throw { status: 403, message: "Unauthorized." }
-    }
+export const getAllApplications = async (jobId: string) => {
     return await prisma.application.findMany({
         where: { jobId: jobId }
     })
@@ -27,9 +17,9 @@ export const createApplication = async (userId: string, jobId: string, data: Cre
         throw { status: 404, message: "Job not found." }
     }
     if (job.clientId == userId) {
-        throw { status: 403, message: "You cannot apply to your own job listing." }
+        throw { status: 403, message: "You cannot apply to your own job." }
     }
-    const existingApplication = await prisma.application.findFirst({ where: { freelancerId: userId } })
+    const existingApplication = await prisma.application.findFirst({ where: { freelancerId: userId, jobId: jobId } })
     if (existingApplication) {
         throw { status: 400, message: "You have already submitted an application to this job." }
     }
@@ -43,13 +33,7 @@ export const createApplication = async (userId: string, jobId: string, data: Cre
 }
 export const editApplication = async (userId: string, id: string, data: UpdateApplicationInput) => {
     const application = await prisma.application.findUnique({ where: { id } })
-    if (!application) {
-        throw { status: 404, message: "Application not found." }
-    }
-    if (userId != application.freelancerId) {
-        throw { status: 403, message: "Unauthorized." }
-    }
-    if (application.status == "PENDING") {
+    if (application!.status != "PENDING") {
         throw { status: 400, message: "Accepted, rejected or withdrawn applications cannot be editted." }
     }
     return await prisma.application.update({ where: { id }, data: data })
@@ -80,12 +64,5 @@ export const editApplicationStatus = async (userId: string, id: string, data: Up
 }
 
 export const deleteApplication = async (userId: string, id: string) => {
-    const application = await prisma.application.findUnique({ where: { id } })
-    if (!application) {
-        throw { status: 404, message: "Application not found." }
-    }
-    if (userId != application.freelancerId) {
-        throw { status: 403, message: "Unauthorized." }
-    }
     return await prisma.application.delete({ where: { id } })
 }
