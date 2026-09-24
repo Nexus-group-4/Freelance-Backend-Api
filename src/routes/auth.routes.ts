@@ -8,6 +8,8 @@ authRouter.post('/register', controllers.registering);
 
 authRouter.post('/login', controllers.loging);
 
+authRouter.post('/refresh', controllers.refresh)
+
 authRouter.post('/logout', controllers.logout);
 
 authRouter.post('/logout-all', controllers.logoutAll);
