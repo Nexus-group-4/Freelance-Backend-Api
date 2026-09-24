@@ -66,6 +66,14 @@
 - PUT /api/jobs/:id
 - DELETE /api/jobs/:id
 
+### Category
+
+- GET /api/categories
+- GET /api/categories/:id
+- POST /api/categories
+- PUT /api/categories/:id
+- DELETE /api/categories/:id
+
 ### Applications
 
 - GET /api/jobs/:jobId/applications

@@ -6,9 +6,11 @@ import {
     REFRESH_TTL_MS,
     createRefreshSecret,
     digestRefreshSecret,
-    buildRefreshCredential
+    buildRefreshCredential,
+    equalDigest
 } from '../utils/refresh-token.js';
-import { randomUUID } from 'crypto';
+import { createDecipheriv, randomUUID } from 'crypto';
+import { AuthPrincipal } from '../types/express.js';
 
 
 
@@ -92,4 +94,107 @@ export async function giveToken(user: UserToken){
     const refreshCredential = buildRefreshCredential(session.id, refreshSecret);
 
     return {accessToken, refreshCredential};
-}
+};
+
+type RefreshOutcome = 
+    | {kind: "ok"; credentials: string; expiresAt: Date; accessToken: string }
+    | {kind: "reused"}
+    | {kind: "invalid"}
+    | {kind: "conflict"}
+
+export async function refreshing(parsed: Parsed){
+    const outcome: RefreshOutcome = await prisma.$transaction(async(tx) => {
+        const session = await tx.authSession.findUnique({
+            where:{ id: parsed?.sessionId },
+            include: {
+                user: {
+                    include:{
+                        role: true
+                    }
+                }
+            }
+        });
+        const now = new Date();
+
+        if(!session || session?.createdAt<= now || !session.revokedAt ){
+            return {kind: "invalid"}
+        }
+
+        const candidate = digestRefreshSecret(parsed!.secret);
+
+        if(!equalDigest(candidate, session.currentRefreshDigest)){
+            await tx.authSession.updateMany({
+                where: {id:session.id, revokedAt: null},
+                data: { revokedAt: now}
+            })
+            return {kind: "reused"}
+        };
+
+        const nextSecret = createRefreshSecret();
+        const nextDigest = digestRefreshSecret(nextSecret);
+
+        const updated = await tx.authSession.updateMany({
+            where:{
+                id: session.id,
+                currentRefreshDigest: session.currentRefreshDigest,
+                revokedAt: null,
+                expiresAt: {gt: now}
+            },
+            data:{
+                currentRefreshDigest: nextDigest
+            }
+        });
+        if(updated.count !== 1){
+            return {kind: "conflict"}
+        };
+
+        const accessToken = createToken({
+            userId: session.user.id,
+            sessionId: session.id,
+            role: session.user.role.name
+        });
+
+        return {
+            kind: "ok", 
+            credentials: buildRefreshCredential(session.id, nextSecret), 
+            expiresAt: session.expiresAt,
+            accessToken: accessToken
+        };
+    });
+
+    return outcome
+};
+
+type Parsed = {
+    sessionId: string,
+    secret: string
+} | null
+
+export async function loggingOut(parsed: Parsed){
+    if(parsed){
+        const session = await prisma.authSession.findUnique({
+            where: {id: parsed.sessionId}
+        });
+
+        if(session && !session.revokedAt){
+            const candidate = digestRefreshSecret(parsed.secret);
+
+            if(equalDigest(candidate, session.currentRefreshDigest)){
+                await prisma.authSession.update({
+                    where: {id: parsed.sessionId},
+                    data: { revokedAt: new Date()}
+                })
+            }
+        }
+    }
+};
+
+export function logOutAll(principal: AuthPrincipal){
+    prisma.authSession.updateMany({
+        where:{
+            id: principal.userId,
+            revokedAt: null
+        },
+        data:{ revokedAt: new Date()}
+    });
+};
