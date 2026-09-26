@@ -40,4 +40,4 @@ router.patch(
     contractControllers.updateContract
 )
 
-export default { router }
+export default router 
