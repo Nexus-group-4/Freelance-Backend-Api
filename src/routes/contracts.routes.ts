@@ -2,10 +2,11 @@ import * as contractControllers from "../controller/contract.controller.js"
 import { Router } from "express"
 import { requirePermission } from "../middleware/permission.middleware.js"
 import { checkApplicationOrJobOwnership, checkApplicationOwnership, checkContractOwnership, checkJobOwnership } from "../middleware/ownership.middleware.js"
+import { requireAuth } from "../middleware/auth.middleware.js"
 
 const router = Router()
+router.use(requireAuth)
 
-// Only the job owner can  create contract
 router.post(
     "/",
     requirePermission("contract:create"),
