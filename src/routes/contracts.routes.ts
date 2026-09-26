@@ -39,3 +39,5 @@ router.patch(
     checkContractOwnership,
     contractControllers.updateContract
 )
+
+export default { router }
