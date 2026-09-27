@@ -6,22 +6,25 @@ import {
     updateCategory,
     deleteCategory,
 } from "../controller/category.controller.js";
+import { requireAuth } from "../middleware/auth.middleware.js"
 
-const router = Router();
+const categoryRoutes = Router();
+categoryRoutes.use(requireAuth)
+
 
 // GET /api/categories - List all categories
-router.get("/", getCategories);
+categoryRoutes.get("/", getCategories);
 
 // GET /api/categories/:id - Get a single category by ID
-router.get("/:id", getCategoryById);
+categoryRoutes.get("/:id", getCategoryById);
 
 // POST /api/categories - Create a new category
-router.post("/", createCategory);
+categoryRoutes.post("/", createCategory);
 
 // PUT /api/categories/:id - Update an existing category
-router.put("/:id", updateCategory);
+categoryRoutes.put("/:id", updateCategory);
 
 // DELETE /api/categories/:id - Delete a category
-router.delete("/:id", deleteCategory);
+categoryRoutes.delete("/:id", deleteCategory);
 
-export default router;
+export default categoryRoutes;

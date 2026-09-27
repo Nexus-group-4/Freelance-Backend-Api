@@ -43,7 +43,7 @@ model User {
   email        String   @unique
   bio          String?
   roleId       String   @map("role_id")
-  passwordHash String
+  passwordHash String?
   tokenVersion Int      @default(0) @map("token_version")
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
@@ -53,12 +53,25 @@ model User {
   skills       Skill[]
   jobs         Job[]
   applications Application[]
+  accounts Account[]
 
   reviewsGiven    Review[]      @relation("ReviewsGiven")
   reviewsReceived Review[]      @relation("ReviewsReceived")
   authSessions    AuthSession[]
 
   @@map("users")
+}
+
+model Account {
+  id                String   @id @default(uuid())
+  userId            String   @map("user_id")
+  provider          String
+  providerAccountId String
+  createdAt         DateTime @default(now()) @map("created_at")
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
 }
 
 model Role {

@@ -6,8 +6,10 @@ import {
     updateSkill,
     deleteSkill,
 } from "../controller/skill.controller.js";
+import { requireAuth } from "../middleware/auth.middleware.js"
 
 const router = Router();
+router.use(requireAuth)
 
 // GET /api/skills - List all skills (supports ?userId=... and ?search=...)
 router.get("/", getSkills);

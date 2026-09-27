@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 
-export const errorHandler = (req: Request, res: Response, next: NextFunction, err: any) => {
+export const errorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
     if (err.name == "ZodError") {
         return res.status(400).json({
             error: "Validation Error",
@@ -11,4 +11,4 @@ export const errorHandler = (req: Request, res: Response, next: NextFunction, er
     const status = err.status || 500
     const message = err.message || "Internal server error"
     return res.status(status).json({ error: message })
-}
+};
