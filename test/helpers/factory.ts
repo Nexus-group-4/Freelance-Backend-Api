@@ -29,6 +29,9 @@ export async function seedRolesAndPermissions() {
         "contract:create",
         "contract:read",
         "contract:update",
+        "jobs:create",
+        "jobs:update",
+        "jobs:delete"
     ]
 
     for (const action of permissionsList) {
@@ -50,8 +53,14 @@ export async function seedRolesAndPermissions() {
 export async function createTestUser(
     email: string,
     roleName: "USER" | "ADMIN" = "USER",
-    permissions: string[] = ["contract:create", "contract:read", "contract:update"]
-) {
+    permissions: string[] = [
+        "contract:create",
+        "contract:read",
+        "contract:update",
+        "jobs:create",
+        "jobs:update",
+        "jobs:delete"
+    ]) {
     let role = await prisma.role.findUnique({ where: { name: roleName } })
     if (!role) {
         role = await prisma.role.create({ data: { name: roleName } })
@@ -143,4 +152,17 @@ export async function seedContractData(
     })
 
     return { client, freelancer, outsider, category, job, application }
+}
+
+export async function seedJobData() {
+    await seedRolesAndPermissions()
+    const client = await createTestUser("client@example.com", "USER")
+    const outsider = await createTestUser("outsider@example.com", "USER")
+
+    const category = await prisma.category.create({
+        data: { name: "Software Development" },
+    })
+
+
+    return { client, category, outsider }
 }
