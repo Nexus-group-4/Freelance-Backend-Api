@@ -2,9 +2,10 @@ import * as jobControllers from "../controller/job.controller.js"
 import { Router } from "express"
 import { requirePermission } from "../middleware/permission.middleware.js"
 import { checkJobOwnership } from "../middleware/ownership.middleware.js"
+import { requireAuth } from "../middleware/auth.middleware.js"
 
 const router = Router()
-
+router.use(requireAuth)
 router.get("/", jobControllers.getAllJobs)
 router.get("/categories", jobControllers.getAllCategories)
 router.get("/:id", jobControllers.getJobById)

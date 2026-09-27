@@ -2,8 +2,10 @@ import * as applicationControllers from "../controller/application.controller.js
 import { Router } from "express"
 import { requirePermission } from "../middleware/permission.middleware.js"
 import { checkApplicationOrJobOwnership, checkApplicationOwnership, checkJobOwnership } from "../middleware/ownership.middleware.js"
+import { requireAuth } from "../middleware/auth.middleware.js"
 
 const router = Router()
+router.use(requireAuth)
 
 
 router.get(
