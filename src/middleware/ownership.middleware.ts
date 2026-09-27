@@ -8,7 +8,7 @@ export const checkJobOwnership = async (req: Request<{ id: string }>, res: Respo
             return res.status(401).json({ message: "Authentication required" })
         }
 
-        const applicationId = req.body.applicationId
+        const applicationId = req.body?.applicationId
         const userId = req.user!.userId
         let clientId: string | undefined
 
