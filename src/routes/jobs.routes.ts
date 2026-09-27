@@ -5,22 +5,24 @@ import { checkJobOwnership } from "../middleware/ownership.middleware.js"
 import { requireAuth } from "../middleware/auth.middleware.js"
 
 const router = Router()
-router.use(requireAuth)
 router.get("/", jobControllers.getAllJobs)
 router.get("/categories", jobControllers.getAllCategories)
 router.get("/:id", jobControllers.getJobById)
 
 router.post(
     "/",
+    requireAuth,
     requirePermission("jobs:create"),
     jobControllers.createJob)
 router.put(
     "/:id",
+    requireAuth,
     requirePermission("jobs:update"),
     checkJobOwnership,
     jobControllers.editJob)
 router.delete(
     "/:id",
+    requireAuth,
     requirePermission("jobs:delete"),
     checkJobOwnership,
     jobControllers.deleteJob)
