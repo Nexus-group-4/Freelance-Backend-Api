@@ -1,5 +1,5 @@
 import { prisma } from "../lib/prisma.js"
-import { CreateApplicationInput, UpdateApplicationInput, UpdateApplicationStatusInput } from "../schemas/application.schemas"
+import { CreateApplicationInput, UpdateApplicationInput, UpdateApplicationStatusInput } from "../schemas/application.schemas.js"
 
 export const getAllApplications = async (jobId: string) => {
     return await prisma.application.findMany({
