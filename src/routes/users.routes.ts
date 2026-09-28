@@ -6,8 +6,10 @@ import {
     updateCurrentUser,
     deleteCurrentUser,
 } from "../controller/user.controller.js";
+import { requireAuth } from "../middleware/auth.middleware.js"
 
 const router = Router();
+router.use(requireAuth)
 
 // GET /api/users - List all users / search
 router.get("/", getUsers);

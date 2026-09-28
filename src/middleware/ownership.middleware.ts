@@ -1,5 +1,6 @@
 import { application, NextFunction, Request, Response } from "express";
-import { prisma } from "../lib/prisma.js"
+import { prisma } from "../lib/prisma.js";
+import { IdParamInput } from "../schemas/admin.schemas.js";
 
 
 export const checkJobOwnership = async (req: Request<{ id: string }>, res: Response, next: NextFunction) => {
@@ -155,3 +156,25 @@ export const checkContractOwnership = async (req: Request<{ id: string }>, res: 
         next(err)
     }
 }
+
+
+export async function checkUserOwnership(req: Request<IdParamInput>, res: Response, next: NextFunction){
+    try {
+        if(!req.user){
+            return res.status(401).json({message: "Authentication required"});
+        }
+    
+        const userId = req.user.userId;
+        const accessedUser = req.params.id;
+    
+        const isUser = userId === accessedUser;
+        const isAdmin = req.user.role === "ADMIN";
+    
+        if(!isAdmin && !isUser){
+            return res.status(403).json({ message: "Unauthorized." })
+        }
+        next();
+    } catch (error) {
+        next(error);
+    }
+};

@@ -1,14 +1,23 @@
 import { Router } from 'express';
-import * as controllers from '../controller/auth.controller.js'
+import { validate } from "../middleware/validate.middleware.js";
+import { requireAuth } from '../middleware/auth.middleware.js';
+import * as controllers from '../controller/auth.controller.js';
+import * as OControllers from '../controller/oauth.controller.js';
+import { registerSchema, loginSchema } from '../schemas/auth.schemas.js';
+import { asyncHandler } from "../utils/async-handler.js";
 
 
 const authRouter = Router();
 
-authRouter.post('/register', controllers.registering);
+authRouter.get('/google', asyncHandler(OControllers.googleLogin));
 
-authRouter.post('/login', controllers.loging);
+authRouter.get('/google/callback', asyncHandler(OControllers.callback));
 
-authRouter.post('/refresh', controllers.refresh)
+authRouter.post('/register', validate(registerSchema),asyncHandler(controllers.registering));
+
+authRouter.post('/login', validate(loginSchema), asyncHandler(controllers.loging));
+
+authRouter.post('/refresh', asyncHandler(controllers.refresh));
 
 authRouter.post('/logout', controllers.logout);
 

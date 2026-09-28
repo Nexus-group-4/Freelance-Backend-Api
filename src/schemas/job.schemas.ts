@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { JobStatus } from "../generated/prisma/enums"
+import { JobStatus } from "../generated/prisma/enums.js"
 
 const jobEnum = z.enum(["OPEN", "CLOSED"])
 
