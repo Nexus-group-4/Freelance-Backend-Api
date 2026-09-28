@@ -30,6 +30,8 @@ describe("Job tests", () => {
 
             const response = await request(app)
                 .get("/api/jobs")
+                .set("Authorization", `Bearer ${client.token}`)
+
 
             expect(response.status).toBe(200)
             expect(response.body.length).toBe(1)
@@ -51,6 +53,8 @@ describe("Job tests", () => {
 
             const response = await request(app)
                 .get("/api/jobs?status=CLOSED")
+                .set("Authorization", `Bearer ${client.token}`)
+
             expect(response.status).toBe(200)
             expect(response.body.length).toBe(0)
         })
@@ -72,6 +76,8 @@ describe("Job tests", () => {
 
             const response = await request(app)
                 .get(`/api/jobs/${job.id}`)
+                .set("Authorization", `Bearer ${client.token}`)
+
 
             expect(response.status).toBe(200)
             expect(response.body.id).toBe(job.id)
