@@ -98,14 +98,14 @@ export const checkApplicationOrJobOwnership = async (req: Request<{ id: string }
         }
         const application = await prisma.application.findUnique({
             where: { id: req.params.id },
-            select: { applicantId: true, job: { select: { clientId: true } } },
+            select: { freelancerId: true, job: { select: { clientId: true } } },
         })
 
         if (!application) {
             return res.status(404).json({ message: "Application not found" })
         }
 
-        const isAppOwner = application.applicantId === req.user!.userId
+        const isAppOwner = application.freelancerId === req.user!.userId
         const isJobOwner = application.job.clientId === req.user!.userId
 
         if (!isAppOwner && !isJobOwner) {
@@ -158,19 +158,19 @@ export const checkContractOwnership = async (req: Request<{ id: string }>, res: 
 }
 
 
-export async function checkUserOwnership(req: Request<IdParamInput>, res: Response, next: NextFunction){
+export async function checkUserOwnership(req: Request<IdParamInput>, res: Response, next: NextFunction) {
     try {
-        if(!req.user){
-            return res.status(401).json({message: "Authentication required"});
+        if (!req.user) {
+            return res.status(401).json({ message: "Authentication required" });
         }
-    
+
         const userId = req.user.userId;
         const accessedUser = req.params.id;
-    
+
         const isUser = userId === accessedUser;
         const isAdmin = req.user.role === "ADMIN";
-    
-        if(!isAdmin && !isUser){
+
+        if (!isAdmin && !isUser) {
             return res.status(403).json({ message: "Unauthorized." })
         }
         next();
