@@ -31,7 +31,12 @@ export async function seedRolesAndPermissions() {
         "contract:update",
         "jobs:create",
         "jobs:update",
-        "jobs:delete"
+        "jobs:delete",
+        "application:read",
+        "application:update",
+        "application:create",
+        "application:delete"
+
     ]
 
     for (const action of permissionsList) {
@@ -59,7 +64,11 @@ export async function createTestUser(
         "contract:update",
         "jobs:create",
         "jobs:update",
-        "jobs:delete"
+        "jobs:delete",
+        "application:read",
+        "application:update",
+        "application:create",
+        "application:delete"
     ]) {
     let role = await prisma.role.findUnique({ where: { name: roleName } })
     if (!role) {
@@ -165,4 +174,27 @@ export async function seedJobData() {
 
 
     return { client, category, outsider }
+}
+
+export async function seedApplicationData() {
+    await seedRolesAndPermissions()
+    const client = await createTestUser("client@example.com", "USER")
+    const freelancer = await createTestUser("freelancer@example.com", "USER")
+    const outsider = await createTestUser("outsider@example.com", "USER")
+
+    const category = await prisma.category.create({
+        data: { name: "Software Development" },
+    })
+    const job = await prisma.job.create({
+        data: {
+            title: "Fullstack App",
+            description: "Build a web app",
+            budget: 1000,
+            clientId: client.user.id,
+            categoryId: category.id,
+        },
+    })
+
+    return { client, freelancer, outsider, job }
+
 }
