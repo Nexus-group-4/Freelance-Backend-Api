@@ -14,9 +14,9 @@ applicationRouter.get(
     applicationControllers.getCurrentUserApplications)
 
 applicationRouter.get(
-    "/:jobId",
+    "/:id",
     checkJobOwnership,
-    requirePermission("application"),
+    requirePermission("application:read"),
     applicationControllers.getAllApplications
 )
 
