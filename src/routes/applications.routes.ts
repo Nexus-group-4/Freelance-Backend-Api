@@ -3,12 +3,6 @@ import { Router } from "express"
 import { requirePermission } from "../middleware/permission.middleware.js"
 import { checkApplicationOrJobOwnership, checkApplicationOwnership, checkJobOwnership } from "../middleware/ownership.middleware.js"
 import { requireAuth } from "../middleware/auth.middleware.js"
-<<<<<<< HEAD
-
-const router = Router()
-router.use(requireAuth)
-=======
->>>>>>> eea2b86209ef6b2be5e7986713ea567cea0f3d69
 
 
 const applicationRouter = Router()
