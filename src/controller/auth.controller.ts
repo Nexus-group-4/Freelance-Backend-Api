@@ -44,9 +44,9 @@ export async function loging(req: Request, res: Response){
     if(!user?.passwordHash){
         return res.status(404).json({message: "Invalid Email or Password!"})
     };
-    const isValid = user ?  verifyPassword(password, user.passwordHash) : false;
+    const isValid = user ?  await verifyPassword(password, user.passwordHash) : false;
 
-    if(!user || !isValid || !user.isActive){
+    if(!user || !isValid){
         return res.status(400).json({message: "Invalid Email or Password!"})
     }
 
@@ -65,7 +65,6 @@ export async function loging(req: Request, res: Response){
             id: user.id,
             email: user.email,
             role: user.role.name,
-            isActive: user.isActive,
             createdAt: user.createdAt,
         }
     })

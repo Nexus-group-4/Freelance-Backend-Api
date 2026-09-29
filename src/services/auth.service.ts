@@ -35,7 +35,6 @@ export function checkUser(email: Email){
             email: true,
             passwordHash: true,
             role: true,
-            isActive: true,
             createdAt: true,
         }
     })
