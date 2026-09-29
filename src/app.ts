@@ -12,7 +12,6 @@ import applicationRouter from "./routes/applications.routes.js";
 import jobRouter from "./routes/jobs.routes.js";
 import { errorHandler } from "./middleware/error.middleware.js";
 
-
 const app = express();
 
 app.use(
@@ -23,7 +22,7 @@ app.use(
   }),
 );
 
-app.use(express.json({limit: "20kb"}));
+app.use(express.json({ limit: "20kb" }));
 
 app.use(cookieParser(process.env.COOKIE_SECRET));
 
@@ -42,4 +41,5 @@ app.use("/api/jobs", jobRouter);
 
 app.use(errorHandler);
 
+app.use(errorHandler)
 export default app;

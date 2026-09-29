@@ -13,15 +13,18 @@ jobRouter.get("/:id", jobControllers.getJobById)
 
 jobRouter.post(
     "/",
+    requireAuth,
     requirePermission("jobs:create"),
     jobControllers.createJob)
 jobRouter.put(
     "/:id",
+    requireAuth,
     requirePermission("jobs:update"),
     checkJobOwnership,
     jobControllers.editJob)
 jobRouter.delete(
     "/:id",
+    requireAuth,
     requirePermission("jobs:delete"),
     checkJobOwnership,
     jobControllers.deleteJob)

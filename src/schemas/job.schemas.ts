@@ -24,9 +24,9 @@ export const createJobSchema = z.object({
 
 })
 
-export const updateJobSchema = z.object({
-    body: createJobSchema.partial()
-})
+export const updateJobSchema = createJobSchema.partial().extend({
+    status: jobEnum.optional()
+});
 
 export type CreateJobInput = z.infer<typeof createJobSchema>
 export type UpdateJobInput = z.infer<typeof updateJobSchema>
