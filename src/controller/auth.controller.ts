@@ -113,20 +113,27 @@ export async function refresh(req: Request, res: Response){
     });
 };
 
-export function logout(req: Request, res: Response){
+export async function logout(req: Request, res: Response){
     const parsed = parseRefreshCredential(req.cookies?.[REFRESH_COOKIE_NAME]);
 
-    services.loggingOut(parsed);
+    if(!parsed){
+        res.clearCookie(REFRESH_COOKIE_NAME, refreshCookieBaseOptions)
+        return res.status(401).json({message: "Refresh Session Required!"});
+    }
+    await services.loggingOut(parsed);
 
     res.clearCookie(REFRESH_COOKIE_NAME, refreshCookieBaseOptions);
     return res.status(200).json({message: "Logged Out!"})
 };
 
-export function logoutAll(req: Request, res: Response){
+export async function logoutAll(req: Request, res: Response){
     const principal = req.auth!
 
-    services.logOutAll(principal);
+    if(principal.role !== "ADMIN"){
+        return res.status(403).json({message: "Unauthorized!"});
+    }
+    await services.logOutAll();
 
     res.clearCookie(REFRESH_COOKIE_NAME, refreshCookieBaseOptions);
-    return res.status(200).json({message: "Logged Out All Devices!"})
+    return res.status(200).json({message: "Logged Out All Devices!"});
 };

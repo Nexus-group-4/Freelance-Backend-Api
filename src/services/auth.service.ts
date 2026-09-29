@@ -116,7 +116,7 @@ export async function refreshing(parsed: Parsed){
         });
         const now = new Date();
 
-        if(!session || session?.createdAt<= now || !session.revokedAt ){
+        if(!session || session.expiresAt <= now || session.revokedAt ){
             return {kind: "invalid"}
         }
 
@@ -171,29 +171,27 @@ type Parsed = {
 } | null
 
 export async function loggingOut(parsed: Parsed){
-    if(parsed){
-        const session = await prisma.authSession.findUnique({
-            where: {id: parsed.sessionId}
-        });
+    
+    const session = await prisma.authSession.findUnique({
+        where: {id: parsed!.sessionId}
+    });
 
-        if(session && !session.revokedAt){
-            const candidate = digestRefreshSecret(parsed.secret);
+    if(session && !session.revokedAt){
+        const candidate = digestRefreshSecret(parsed!.secret);
 
-            if(equalDigest(candidate, session.currentRefreshDigest)){
-                await prisma.authSession.update({
-                    where: {id: parsed.sessionId},
-                    data: { revokedAt: new Date()}
-                })
-            }
+        if(equalDigest(candidate, session.currentRefreshDigest)){
+            await prisma.authSession.update({
+                where: {id: parsed!.sessionId},
+                data: { revokedAt: new Date()}
+            })
         }
     }
 };
 
-export function logOutAll(principal: AuthPrincipal){
-    prisma.authSession.updateMany({
-        where:{
-            id: principal.userId,
-            revokedAt: null
+export function logOutAll(){
+    return prisma.authSession.updateMany({
+        where: {
+            revokedAt: null,
         },
         data:{ revokedAt: new Date()}
     });
