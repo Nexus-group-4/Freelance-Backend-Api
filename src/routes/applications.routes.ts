@@ -5,42 +5,41 @@ import { checkApplicationOrJobOwnership, checkApplicationOwnership, checkJobOwne
 import { requireAuth } from "../middleware/auth.middleware.js"
 
 
-const applicationRouter = Router()
-
+export const applicationRouter = Router();
 applicationRouter.use(requireAuth)
 
-
 applicationRouter.get(
-    "/jobs/:jobId/applications",
-    checkJobOwnership,
-    requirePermission("application"),
-    applicationControllers.getAllApplications
-)
-
-applicationRouter.get(
-    "/applications/me",
+    "/me",
     requirePermission("application:read"),
     applicationControllers.getCurrentUserApplications)
 
+applicationRouter.get(
+    "/:id",
+    checkJobOwnership,
+    requirePermission("application:read"),
+    applicationControllers.getAllApplications
+)
+
+
 applicationRouter.post(
-    "/jobs/:jobId/applications",
+    "/:jobId",
     requirePermission("application:create"),
     applicationControllers.createApplication
 )
 applicationRouter.put(
-    "/applications/:id",
+    "/:id",
     requirePermission("application:update"),
     checkApplicationOwnership,
     applicationControllers.editApplication
 )
 applicationRouter.patch(
-    "/applications/:id/status",
+    "/:id",
     requirePermission("application:update"),
     checkApplicationOrJobOwnership,
     applicationControllers.editApplicationStatus
 )
 applicationRouter.delete(
-    "/applications/:id",
+    "/:id",
     requirePermission("application:delete"),
     checkApplicationOwnership,
     applicationControllers.deleteApplication

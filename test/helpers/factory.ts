@@ -29,6 +29,14 @@ export async function seedRolesAndPermissions() {
         "contract:create",
         "contract:read",
         "contract:update",
+        "jobs:create",
+        "jobs:update",
+        "jobs:delete",
+        "application:read",
+        "application:update",
+        "application:create",
+        "application:delete"
+
     ]
 
     for (const action of permissionsList) {
@@ -50,8 +58,18 @@ export async function seedRolesAndPermissions() {
 export async function createTestUser(
     email: string,
     roleName: "USER" | "ADMIN" = "USER",
-    permissions: string[] = ["contract:create", "contract:read", "contract:update"]
-) {
+    permissions: string[] = [
+        "contract:create",
+        "contract:read",
+        "contract:update",
+        "jobs:create",
+        "jobs:update",
+        "jobs:delete",
+        "application:read",
+        "application:update",
+        "application:create",
+        "application:delete"
+    ]) {
     let role = await prisma.role.findUnique({ where: { name: roleName } })
     if (!role) {
         role = await prisma.role.create({ data: { name: roleName } })
@@ -143,4 +161,40 @@ export async function seedContractData(
     })
 
     return { client, freelancer, outsider, category, job, application }
+}
+
+export async function seedJobData() {
+    await seedRolesAndPermissions()
+    const client = await createTestUser("client@example.com", "USER")
+    const outsider = await createTestUser("outsider@example.com", "USER")
+
+    const category = await prisma.category.create({
+        data: { name: "Software Development" },
+    })
+
+
+    return { client, category, outsider }
+}
+
+export async function seedApplicationData() {
+    await seedRolesAndPermissions()
+    const client = await createTestUser("client@example.com", "USER")
+    const freelancer = await createTestUser("freelancer@example.com", "USER")
+    const outsider = await createTestUser("outsider@example.com", "USER")
+
+    const category = await prisma.category.create({
+        data: { name: "Software Development" },
+    })
+    const job = await prisma.job.create({
+        data: {
+            title: "Fullstack App",
+            description: "Build a web app",
+            budget: 1000,
+            clientId: client.user.id,
+            categoryId: category.id,
+        },
+    })
+
+    return { client, freelancer, outsider, job }
+
 }

@@ -10,9 +10,7 @@ export const createApplicationSchema = z.object({
     proposedRate: z.number()
 })
 
-export const updateApplicationSchema = z.object({
-    body: createApplicationSchema.partial()
-})
+export const updateApplicationSchema = createApplicationSchema.partial()
 export const updateApplicationStatusSchema = z.object({
     status: ApplicationEnum
 })
