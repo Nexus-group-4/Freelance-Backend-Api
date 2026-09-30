@@ -44,9 +44,9 @@ export async function loging(req: Request, res: Response){
     if(!user?.passwordHash){
         return res.status(404).json({message: "Invalid Email or Password!"})
     };
-    const isValid = user ?  verifyPassword(password, user.passwordHash) : false;
+    const isValid = user ?  await verifyPassword(password, user.passwordHash) : false;
 
-    if(!user || !isValid || !user.isActive){
+    if(!user || !isValid){
         return res.status(400).json({message: "Invalid Email or Password!"})
     }
 
@@ -65,7 +65,6 @@ export async function loging(req: Request, res: Response){
             id: user.id,
             email: user.email,
             role: user.role.name,
-            isActive: user.isActive,
             createdAt: user.createdAt,
         }
     })
@@ -113,20 +112,27 @@ export async function refresh(req: Request, res: Response){
     });
 };
 
-export function logout(req: Request, res: Response){
+export async function logout(req: Request, res: Response){
     const parsed = parseRefreshCredential(req.cookies?.[REFRESH_COOKIE_NAME]);
 
-    services.loggingOut(parsed);
+    if(!parsed){
+        res.clearCookie(REFRESH_COOKIE_NAME, refreshCookieBaseOptions)
+        return res.status(401).json({message: "Refresh Session Required!"});
+    }
+    await services.loggingOut(parsed);
 
     res.clearCookie(REFRESH_COOKIE_NAME, refreshCookieBaseOptions);
     return res.status(200).json({message: "Logged Out!"})
 };
 
-export function logoutAll(req: Request, res: Response){
+export async function logoutAll(req: Request, res: Response){
     const principal = req.auth!
 
-    services.logOutAll(principal);
+    if(principal.role !== "ADMIN"){
+        return res.status(403).json({message: "Unauthorized!"});
+    }
+    await services.logOutAll();
 
     res.clearCookie(REFRESH_COOKIE_NAME, refreshCookieBaseOptions);
-    return res.status(200).json({message: "Logged Out All Devices!"})
+    return res.status(200).json({message: "Logged Out All Devices!"});
 };
