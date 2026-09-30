@@ -159,22 +159,19 @@ export const checkContractOwnership = async (req: Request<{ id: string }>, res: 
 
 
 export async function checkUserOwnership(req: Request<IdParamInput>, res: Response, next: NextFunction) {
-    try {
-        if (!req.user) {
-            return res.status(401).json({ message: "Authentication required" });
-        }
-
-        const userId = req.user.userId;
-        const accessedUser = req.params.id;
-
-        const isUser = userId === accessedUser;
-        const isAdmin = req.user.role === "ADMIN";
-
-        if (!isAdmin && !isUser) {
-            return res.status(403).json({ message: "Unauthorized." })
-        }
-        next();
-    } catch (error) {
-        next(error);
+    
+    if (!req.user) {
+        return res.status(401).json({ message: "Authentication required" });
     }
+
+    const userId = req.user.userId;
+    const accessedUser = req.params.id;
+
+    const isUser = userId === accessedUser;
+    const isAdmin = req.user.role === "ADMIN";
+
+    if (!isAdmin && !isUser) {
+        return res.status(403).json({ message: "Unauthorized." })
+    }
+    next();
 };

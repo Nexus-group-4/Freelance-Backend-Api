@@ -7,6 +7,7 @@ import { registerSchema, loginSchema } from '../schemas/auth.schemas.js';
 import { asyncHandler } from "../utils/async-handler.js";
 import { checkUserOwnership } from '../middleware/ownership.middleware.js';
 
+
 const authRouter = Router();
 
 authRouter.get('/google', asyncHandler(OControllers.googleLogin));
@@ -21,6 +22,6 @@ authRouter.post('/refresh', asyncHandler(controllers.refresh));
 
 authRouter.post('/logout', controllers.logout);
 
-authRouter.post('/logout-all', checkUserOwnership, controllers.logoutAll);
+authRouter.post('/logout-all', requireAuth, controllers.logoutAll);
 
 export default authRouter;
