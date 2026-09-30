@@ -41,12 +41,15 @@ export async function loging(req: Request, res: Response){
 
     //check if user exists
     const user = await services.checkUser(email);
-    if(!user?.passwordHash){
+    if(!user){
+        return res.status(400).json({message: "Invalid Email or Password!"})
+    }
+    if(!user.passwordHash){
         return res.status(404).json({message: "Invalid Email or Password!"})
     };
     const isValid = user ?  await verifyPassword(password, user.passwordHash) : false;
 
-    if(!user || !isValid){
+    if(!isValid){
         return res.status(400).json({message: "Invalid Email or Password!"})
     }
 
@@ -126,7 +129,7 @@ export async function logout(req: Request, res: Response){
 };
 
 export async function logoutAll(req: Request, res: Response){
-    const principal = req.auth!
+    const principal = req.user!;
 
     if(principal.role !== "ADMIN"){
         return res.status(403).json({message: "Unauthorized!"});

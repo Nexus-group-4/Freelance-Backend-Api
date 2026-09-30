@@ -36,85 +36,16 @@
 - Grants admin privileges to a user.
 - Logout all users
 
-## API Scope
 
-### Authentication & Users
+## Installation
 
-- POST /api/auth/register
-- POST /api/auth/login
-- POST /api/auth/refresh
-- POST /api/auth/logout
-- POST /api/auth/logout-all
-- GET /api/users/me
-- GET /api/users/:id
-- PUT /api/users/me
-- DELETE /api/users/me
+Clone the repository:
 
-### Skills
-
-- GET /api/skills
-- POST /api/skills
-- PUT /api/skills/:id
-- DELETE /api/skills/:id
-
-### Jobs
-
-- GET /api/jobs
-- GET /api/jobs/:id
-- GET /api/categories
-- POST /api/jobs
-- PUT /api/jobs/:id
-- DELETE /api/jobs/:id
-
-### Category
-
-- GET /api/categories
-- GET /api/categories/:id
-- POST /api/categories
-- PUT /api/categories/:id
-- DELETE /api/categories/:id
-
-### Applications
-
-- GET /api/jobs/:jobId/applications
-- GET /api/applications/me
-- POST /api/jobs/:jobId/applications
-- PUT /api/applications/:id
-- PATCH /api/applications/:id/status
-- DELETE /api/applications/:id
-
-### Contracts
-
-- GET /api/contracts
-- PATCH /contracts/:id/respond
-- PATCH /api/contracts/:id/status
-
-### Reviews
-
-- GET /api/users/:userId/reviews
-- POST /api/contracts/:contractId/reviews
-
-### Admin
-
-- GET /api/admin/analytics
-- GET /api/admin/users
-- PUT /api/admin/users/:id
-- PATCH /api/admin/users/:id/role
-- PATCH /api/admin/applications/:id
-- DELETE /api/admin/users/:id
-- DELETE /api/admin/jobs/:id
-- DELETE /api/admin/applications/:id
-
-## Technology Stack
-
-- TypeScript: The language used to help with code correction.
-- Node.js: Backend runtime environment for the compiled JavaScript.
-- Express.js: JavaScript Framework to ease the API building.
-- PostgreSQL: For the structured database management.
-- Prisma ORM: For database communication with our API.
-- Zod: Runtime request validation, query coercion, and TypeScript type inference.
-- Bcrypt: For password hashing and protection.
-- JWT: User Authentication and Authorization.
+```bash
+git clone <https://github.com/Nexus-group-4/Freelance-Backend-Api>
+cd Freelance-Backend-Api
+npm install
+```
 
 ## DATABASE
 
@@ -169,21 +100,176 @@ This project uses PostgreSQL as the database, accessed through Prisma ORM.
 
 ### Database Setup
 
-- Initialize the project:
-
-```bash
-npm install
-```
-
-- Create a .env file and add the PostgreSQL database connection:
-  
-```bash
-DATABASE_URL="postgresql://username:password@localhost:5432/mydb?schema=public"
-```
-
 - Apply migrations and generate prisma client
 
 ```bash
-npx prisma migrate deploy
+npx prisma migrate dev
 npx prisma generate
+npm run db:seed
 ```
+
+## Technology Stack
+
+- TypeScript: The language used to help with code correction.
+- Node.js: Backend runtime environment for the compiled JavaScript.
+- Express.js: JavaScript Framework to ease the API building.
+- PostgreSQL: For the structured database management.
+- Prisma ORM: For database communication with our API.
+- Zod: Runtime request validation, query coercion, and TypeScript type inference.
+- Bcrypt: For password hashing and protection.
+- JWT: User Authentication and Authorization.
+- openid-client: For OAuth and OpenID Connect 3rd party authentication purposes.
+- Vitest and Supertest: for testing in development.
+
+
+### Running the Application
+
+```bash
+npm run dev
+```
+- Server will run at http://localhost:5000
+
+
+### Running Tests
+
+```bash
+npx vitest run
+```
+
+## API Scope
+
+### Authentication & Users
+
+- POST /api/auth/register
+- POST /api/auth/login
+- POST /api/auth/refresh
+- POST /api/auth/logout
+- POST /api/auth/logout-all
+- GET /api/users/me
+- GET /api/users/:id
+- PUT /api/users/me
+- DELETE /api/users/me
+
+### Skills
+
+- GET /api/skills
+- POST /api/skills
+- PUT /api/skills/:id
+- DELETE /api/skills/:id
+
+### Jobs
+
+- GET /api/jobs
+- GET /api/jobs/:id
+- GET /api/categories
+- POST /api/jobs
+- PUT /api/jobs/:id
+- DELETE /api/jobs/:id
+
+### Category
+
+- GET /api/categories
+- GET /api/categories/:id
+- POST /api/categories
+- PUT /api/categories/:id
+- DELETE /api/categories/:id
+
+### Applications
+
+- GET /api/jobs/:jobId/applications
+- GET /api/applications/me
+- POST /api/jobs/:jobId/applications
+- PUT /api/applications/:id
+- PATCH /api/applications/:id/status
+- DELETE /api/applications/:id
+
+### Contracts
+
+- GET /api/contracts
+- PATCH /contracts/:id/respond
+- PATCH /api/contracts/:id/status
+
+
+### Admin
+
+- GET /api/admin/analytics
+- GET /api/admin/users
+- PUT /api/admin/users/:id
+- PATCH /api/admin/users/:id/role
+- PATCH /api/admin/applications/:id
+- DELETE /api/admin/users/:id
+- DELETE /api/admin/jobs/:id
+- DELETE /api/admin/applications/:id
+
+## Folder Architecture
+📦Freelance-Backend-Api
+ ┣ 📂prisma
+ ┃ ┣ 📜schema.prisma
+ ┃ ┗ 📜seed.ts
+ ┣ 📂src
+ ┃ ┣ 📂config
+ ┃ ┃ ┗ 📜env.ts
+ ┃ ┣ 📂controller
+ ┃ ┃ ┣ 📜admin.controller.ts
+ ┃ ┃ ┣ 📜application.controller.ts
+ ┃ ┃ ┣ 📜auth.controller.ts
+ ┃ ┃ ┣ 📜category.controller.ts
+ ┃ ┃ ┣ 📜contract.controller.ts
+ ┃ ┃ ┣ 📜job.controller.ts
+ ┃ ┃ ┣ 📜oauth.controller.ts
+ ┃ ┃ ┣ 📜skill.controller.ts
+ ┃ ┃ ┗ 📜user.controller.ts
+ ┃ ┣ 📂lib
+ ┃ ┃ ┣ 📜oauth.ts
+ ┃ ┃ ┗ 📜prisma.ts
+ ┃ ┣ 📂middleware
+ ┃ ┃ ┣ 📜auth.middleware.ts
+ ┃ ┃ ┣ 📜error.middleware.ts
+ ┃ ┃ ┣ 📜ownership.middleware.ts
+ ┃ ┃ ┣ 📜permission.middleware.ts
+ ┃ ┃ ┗ 📜validate.middleware.ts
+ ┃ ┣ 📂routes
+ ┃ ┃ ┣ 📜admin.routes.ts
+ ┃ ┃ ┣ 📜applications.routes.ts
+ ┃ ┃ ┣ 📜auth.routes.ts
+ ┃ ┃ ┣ 📜categories.routes.ts
+ ┃ ┃ ┣ 📜contracts.routes.ts
+ ┃ ┃ ┣ 📜jobs.routes.ts
+ ┃ ┃ ┣ 📜skills.routes.ts
+ ┃ ┃ ┗ 📜users.routes.ts
+ ┃ ┣ 📂schemas
+ ┃ ┃ ┣ 📜admin.schemas.ts
+ ┃ ┃ ┣ 📜application.schemas.ts
+ ┃ ┃ ┣ 📜auth.schemas.ts
+ ┃ ┃ ┣ 📜contract.schemas.ts
+ ┃ ┃ ┣ 📜job.schemas.ts
+ ┃ ┃ ┗ 📜skill.schemas.ts
+ ┃ ┣ 📂services
+ ┃ ┃ ┣ 📜admin.service.ts
+ ┃ ┃ ┣ 📜application.service.ts
+ ┃ ┃ ┣ 📜auth.service.ts
+ ┃ ┃ ┣ 📜category.service.ts
+ ┃ ┃ ┣ 📜contract.service.ts
+ ┃ ┃ ┣ 📜job.service.ts
+ ┃ ┃ ┣ 📜oauth.service.ts
+ ┃ ┃ ┣ 📜skill.service.ts
+ ┃ ┃ ┗ 📜user.service.ts
+ ┃ ┣ 📂types
+ ┃ ┃ ┣ 📜express.d.ts
+ ┃ ┃ ┗ 📜oauth.types.ts
+ ┃ ┣ 📂utils
+ ┃ ┃ ┣ 📜access-token.ts
+ ┃ ┃ ┣ 📜async-handler.ts
+ ┃ ┃ ┣ 📜oauth.ts
+ ┃ ┃ ┣ 📜password.ts
+ ┃ ┃ ┗ 📜refresh-token.ts
+ ┃ ┣ 📜app.ts
+ ┃ ┗ 📜server.ts
+ ┣ 📂test
+ ┃ ┣ 📂helpers
+ ┃ ┃ ┗ 📜factory.ts
+ ┃ ┣ 📜applications.test.ts
+ ┃ ┣ 📜auth.test.ts
+ ┃ ┣ 📜contracts.test.ts
+ ┃ ┗ 📜jobs.test.ts
+ ┣ 📜.env.example
